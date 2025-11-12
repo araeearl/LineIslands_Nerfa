@@ -1,0 +1,386 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var flint_2009 = ee.Image("projects/ee-arearl/assets/Lineislands/Flint_Mar092009"),
+    flint_2021 = ee.Image("projects/ee-arearl/assets/Lineislands/Flint_Sep282021"),
+    flint_outline = ee.FeatureCollection("projects/ee-arearl/assets/Lineislands/Flint_outline"),
+    viz_islands = {"opacity":1,"bands":["b3","b2","b1"],"min":0,"max":2000,"gamma":1.5530000000000002},
+    flint_center = /* color: #d63000 */ee.Geometry.Point([-151.81955513959815, -11.428609593383056]),
+    Flint_Clouds = 
+    /* color: #00ff00 */
+    /* shown: false */
+    ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Polygon(
+                [[[-151.82320888247068, -11.415538171772937],
+                  [-151.82323034014155, -11.415580238148227],
+                  [-151.8232571622332, -11.415656483434367],
+                  [-151.8232866665322, -11.415682774909818],
+                  [-151.82328130211374, -11.41575902016841],
+                  [-151.82329471316, -11.415824748823182],
+                  [-151.82334835734497, -11.41589047746273],
+                  [-151.823412730367, -11.41589836489844],
+                  [-151.82343687028714, -11.415919398038481],
+                  [-151.82344894018826, -11.415954891515046],
+                  [-151.82344759916148, -11.415993014115644],
+                  [-151.8234569868886, -11.416008789004252],
+                  [-151.8234797856061, -11.416056113596698],
+                  [-151.82347442116983, -11.416142875327466],
+                  [-151.82340334266001, -11.416199401894902],
+                  [-151.823281302167, -11.416278276162046],
+                  [-151.82322363465886, -11.41622437876103],
+                  [-151.82320888248614, -11.416237524456848],
+                  [-151.82315121499505, -11.416266445030866],
+                  [-151.82303990328117, -11.416266444988283],
+                  [-151.82293797932965, -11.416261186704647],
+                  [-151.82285483084283, -11.416224378716478],
+                  [-151.82276363572828, -11.416200716435839],
+                  [-151.82263757189352, -11.41618231243841],
+                  [-151.82262147863804, -11.416103438150266],
+                  [-151.82255174119746, -11.416100809006947],
+                  [-151.822546376779, -11.416021934696138],
+                  [-151.82251955468647, -11.415961464376327],
+                  [-151.82247932154772, -11.415903623188797],
+                  [-151.82251687247717, -11.415814232239445],
+                  [-151.82261074980104, -11.415837894552306],
+                  [-151.82269658049697, -11.415675846286815],
+                  [-151.82280118665778, -11.415502322514202],
+                  [-151.82286287747058, -11.415431335485735],
+                  [-151.82297553025916, -11.41535509013909],
+                  [-151.82308013642086, -11.41543922292589],
+                  [-151.8232062002552, -11.41546288527049]]]),
+            {
+              "Class": 1,
+              "system:index": "0"
+            }),
+        ee.Feature(
+            ee.Geometry.Polygon(
+                [[[-151.8223800799918, -11.41504935102592],
+                  [-151.82239080882786, -11.415183437789041],
+                  [-151.82229424930333, -11.415212358455129],
+                  [-151.8222701094222, -11.414978363890382],
+                  [-151.82240421987294, -11.41488634350307]]]),
+            {
+              "Class": 1,
+              "system:index": "1"
+            })]),
+    Flint_shadow = 
+    /* color: #0000ff */
+    /* shown: false */
+    ee.FeatureCollection(
+        [ee.Feature(
+            ee.Geometry.Polygon(
+                [[[-151.8278454320842, -11.417355108697544],
+                  [-151.82785616092025, -11.417575955655405],
+                  [-151.82774350814162, -11.41764431301229],
+                  [-151.82758794001876, -11.417596988690054],
+                  [-151.82731971911727, -11.417528631321769],
+                  [-151.82735727004348, -11.41734985043455],
+                  [-151.8274699228221, -11.41723416862397],
+                  [-151.82751820258437, -11.41712900330069],
+                  [-151.82765767745315, -11.417144778101667]]]),
+            {
+              "Class": 2,
+              "system:index": "0"
+            })]),
+    Flint_Clear = 
+    /* color: #c1d642 */
+    /* shown: false */
+    ee.Geometry.MultiPolygon(
+        [[[[-151.81808665649353, -11.437890043487322],
+           [-151.81787207977234, -11.438457894176112],
+           [-151.81705668823182, -11.439867000225675],
+           [-151.81600526229798, -11.441886005626062],
+           [-151.81529715911805, -11.443358187986084],
+           [-151.81415990249573, -11.445166858688896],
+           [-151.8122439909048, -11.446580203394324],
+           [-151.81059175015162, -11.446832573871138],
+           [-151.81007676602076, -11.445402471526533],
+           [-151.8107848692007, -11.443488646788008],
+           [-151.81155734539698, -11.441743059094067],
+           [-151.81267314434717, -11.438777638458822],
+           [-151.81320958615015, -11.437158211242187],
+           [-151.81552701473902, -11.437326463851624]]],
+         [[[-151.82559422210608, -11.413464564193745],
+           [-151.82603410438452, -11.41545220787928],
+           [-151.8257444258109, -11.415851838262066],
+           [-151.8253957371029, -11.415541598291334],
+           [-151.8248351553459, -11.415344411909224],
+           [-151.82434028841794, -11.414772571081548],
+           [-151.8246608133689, -11.414242796713038],
+           [-151.82530454353247, -11.41343301418174]]],
+         [[[-151.82458225165266, -11.429837726444509],
+           [-151.8197113600816, -11.429574824748933],
+           [-151.81625667487043, -11.428807150402035],
+           [-151.8169540492143, -11.425610237613053],
+           [-151.82548347388166, -11.426777535606407]]],
+         [[[-151.82287296075674, -11.420610289774444],
+           [-151.8236025216088, -11.421861739234322],
+           [-151.82213267106863, -11.42274511199881],
+           [-151.8211348893151, -11.422482203725565],
+           [-151.82038387079092, -11.421346437184319],
+           [-151.8211563469872, -11.420736486608975]]]]),
+    NDVI_Viz = {"opacity":1,"bands":["NDVI"],"min":-1,"max":1,"palette":["ffffff","ce7e45","df923d","f1b555","fcd163","99b718","74a901","054e0b"]};
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+//Flint Island shared
+
+//Flint Island has one cloud and very few shadows however due to consistancy I will run it through a Cloud 
+//mask as well
+
+//Create collection of images to view them all at once
+//uploaded from imagery dropbox
+var islandscol = ee.ImageCollection([flint_2009,flint_2021] )
+print(islandscol)
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+//add all images in layer function
+
+function addImage(image) { // display each image in collection
+  var id = image.id
+  var image = ee.Image(image.id)
+  Map.addLayer(image, viz_islands, id)
+};
+
+
+
+// islandscol.evaluate(function(islandscol){
+//   islandscol.features.map(addImage)
+// });
+
+//////////////////////////////////////
+//clip to only the outline so that the classification is even more accurate
+// var flint_2009 = flint_2009.clip(flint_outline)
+// var flint_2021 = flint_2021.clip(flint_outline)
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//create points using the geometery imports finding cloud and shadow
+//for this project we do not need to focus strictly on differentiating clouds and shadows as the groups
+// will eventually be merged
+//points were collected visually from areas of interest, generally over land masses
+//make each geometry into a feature collection
+//add a property "Class" and a values 1, 2, 
+  //0 = clear
+  //1 = clouds
+  //2 = shadow
+  
+////Clouds  
+// Generate random points within the sample area.  
+var cloud_2021_points= ee.FeatureCollection.randomPoints(Flint_Clouds, 200)
+    .map(function(f) {
+        return f.set('class', 1)
+    }) 
+
+
+Map.addLayer(cloud_2021_points, {}, "cloud_2021_points", false );
+
+
+////Shadows  
+// Generate random points within the sample area.  
+var shadow_2021_points= ee.FeatureCollection.randomPoints(Flint_shadow, 100)
+    .map(function(f) {
+        return f.set('class', 1)
+    }) 
+
+
+Map.addLayer(shadow_2021_points, {}, "shadow_2021_points", false );
+
+//Clear from 2021 and 2009 
+var clear_2021_points= ee.FeatureCollection.randomPoints(Flint_Clear, 1000)
+    .map(function(f) {
+        return f.set('class', 0)
+    }) 
+    
+  
+
+var clear_2009_points= ee.FeatureCollection.randomPoints(Flint_Clear, 500)
+    .map(function(f) {
+        return f.set('class', 0)
+    }) 
+
+///merge the points together
+
+var flint_lc_2021 = (cloud_2021_points).merge(clear_2021_points).merge(shadow_2021_points)
+
+var pixels_Flint2021 = flint_2021.sampleRegions(flint_lc_2021, ["class"], 2);
+var pixels_Flint2009 = flint_2009.sampleRegions(clear_2009_points,["class"], 2)
+
+print(pixels_Flint2021)
+
+
+////merge all the trainingpixels and add a random column
+
+var trainingdata = pixels_Flint2021.merge(pixels_Flint2009)
+
+var trainingdata = trainingdata.randomColumn("random");
+
+//split the data into the final training and testing set
+var trainingdata_input = trainingdata.filter(ee.Filter.lt("random",0.7));
+
+var validationdata= trainingdata.filter(ee.Filter.gt("random",0.7));
+
+//identify the bands you will be using in the classifier)
+var bands = ["b1","b2","b3","b4"];
+
+// //create the classifier
+var classifier = ee.Classifier.smileRandomForest(500)
+    .train({
+      features:trainingdata_input,
+      classProperty: 'class',
+      inputProperties: bands,
+    });    
+
+// // ////////////////////////////////////////////////////////////////////////////////////
+//Accuracy metrics on the training data
+//Get information about the trained classifier.
+print('Results of trained classifier', classifier.explain());
+
+//Get a confusion matrix and overall accuracy for the training sample.
+var trainAccuracy = classifier.confusionMatrix();
+print('Training error matrix', trainAccuracy);
+print('Training overall accuracy', trainAccuracy.accuracy());
+
+// // //////////////////////////////////////////////////////////////////////////////////////
+//Accuracy on the testing data
+//Get a confusion matrix and overall accuracy for the validation sample.
+var validationSample = validationdata.classify(classifier);
+var validationAccuracy = validationSample.errorMatrix('class','classification');
+print('Validation error matrix', validationAccuracy);
+print('Validation accuracy', validationAccuracy.accuracy());
+
+// // ///////////////////////////////////////////////////////////////////////////////
+//other accuracy metrics
+var CAtest_validation = validationAccuracy .consumersAccuracy();
+var Kappatest_validation = validationAccuracy .kappa(); 
+var PAtest_validation = validationAccuracy .producersAccuracy();
+
+print(CAtest_validation,'Consumers Accuracy validation');
+print(Kappatest_validation,'Kappa test validation');
+print( PAtest_validation ,'Producers Accuracy test validation');
+
+
+/////////////////////////////////////////////////////////////////////
+//classify the images
+var classed_Flint2009 = flint_2009.classify(classifier)
+var classed_Flint2021 = flint_2021.classify(classifier)
+
+
+var class_visparams = {bands: ["classification"],
+  min:0, max:1,
+palette: ['green', 'white']};
+print(classed_Flint2009)
+Map.addLayer(classed_Flint2009.clip(flint_outline), class_visparams, "classed_2009")
+Map.addLayer(classed_Flint2021.clip(flint_outline), class_visparams, "classed_2021")
+
+//Add classification bands to original images
+
+var class_flint_2009 = classed_Flint2009.select('classification')
+var flint_classedimg_2009 = flint_2009.addBands(class_flint_2009)
+print(flint_classedimg_2009)
+
+var class_flint_2021 = classed_Flint2021.select('classification')
+var flint_classedimg_2021 = flint_2021.addBands(class_flint_2021)
+print(flint_classedimg_2021)
+
+
+//creat mask in classification band
+var mask = classed_Flint2009.eq(0); // 
+var final_mask_2009 = flint_classedimg_2009.updateMask(mask); 
+
+var mask_21 = classed_Flint2021.eq(0); // 
+var final_mask_2021 = flint_classedimg_2021.updateMask(mask_21); 
+
+
+
+
+Map.addLayer(final_mask_2009.clip(flint_outline), viz_islands, "final_2009")
+Map.addLayer(final_mask_2021.clip(flint_outline), viz_islands, "final_2021")
+
+
+//Add and calculate the NDVI of the image as a band
+// Compute the Normalized Difference Vegetation Index (NDVI).
+var nir_2009 = final_mask_2009.select('b4');
+var red_2009 = final_mask_2009.select('b3');
+var ndvi_2009 = nir_2009.subtract(red_2009).divide(nir_2009.add(red_2009)).rename('NDVI');
+
+var nir_2021 = final_mask_2021.select('b4');
+var red_2021 = final_mask_2021.select('b3');
+var ndvi_2021 = nir_2021.subtract(red_2021).divide(nir_2021.add(red_2021)).rename('NDVI');
+
+
+//Add bands
+
+var final_mask_NDVI_2009 = final_mask_2009. addBands(ndvi_2009)
+var final_mask_NDVI_2021 = final_mask_2021. addBands(ndvi_2021)
+
+print(final_mask_NDVI_2009, "final_mask_NDVI_2009")
+print(final_mask_NDVI_2021, "final_mask_NDVI_2021")
+
+var ndviVis = {
+  min: -1.0,
+  max: 1.0,
+  palette: [
+    'FFFFFF', 'CE7E45', 'DF923D', 'F1B555', 'FCD163', '99B718', '74A901',
+    '66A000', '529400', '3E8601', '207401', '056201', '004C00', '023B01',
+    '012E01', '011D01', '011301'
+  ],
+};
+
+Map.addLayer(final_mask_NDVI_2009.select('NDVI').clip(flint_outline), NDVI_Viz, "NDVI 2009")
+Map.addLayer(final_mask_NDVI_2021.select('NDVI').clip(flint_outline), NDVI_Viz, "NDVI 2021")
+
+
+//Cast all bands to the least restrictive type(float)
+//Casting float into int loses data
+
+var final_mask_NDVI_2009_float = final_mask_NDVI_2009.toFloat()
+print(final_mask_NDVI_2009_float)
+
+var final_mask_NDVI_2021_float = final_mask_NDVI_2021.toFloat()
+print(final_mask_NDVI_2021_float)
+
+//Export the image as a Raster to drive and as an asset for future calculation etc
+// Export the image, specifying the CRS, transform, and region.
+
+
+// // //scale down to the smallest nominal scale which is 1.2 V 1.6?
+// // //scale nothing until we resample to the same size?
+// Export.image.toDrive({
+//   image: final_mask_NDVI_2009_float.clip(flint_outline),
+//   description: 'flint_final_mask_NDVI_2009',
+//   folder:"Line_islands",
+//   //crs: 'EPSG :3857',
+//   scale: 1.2, 
+//   region: flint_outline,
+//   //maxPixels: 1e9,
+//   fileFormat: 'GeoTIFF'
+// })
+
+
+// Export.image.toDrive({
+//   image: final_mask_NDVI_2021_float.clip(flint_outline),
+//   description: 'flint_final_mask_NDVI_2021',
+//   folder:"Line_islands",
+//   //crs: 'EPSG :3857',
+//   scale: 1.2, 
+//   region: flint_outline,
+//   //maxPixels: 1e9,
+//   fileFormat: 'GeoTIFF'
+// })
+
+// // Set the export "scale" and "crs" parameters.
+// Export.image.toAsset({
+//   image: final_mask_NDVI_2009_float,
+//   description: 'flint_final_mask_NDVI_2009',
+//   assetId: 'projects/ee-arearl/LineIslands/flint_final_mask_NDVI_2009',  // <> modify these
+//   region: flint_outline,
+//   scale: 1.2,
+// });
+
+// // Set the export "scale" and "crs" parameters.
+// Export.image.toAsset({
+//   image: final_mask_NDVI_2021_float,
+//   description: 'flint_final_mask_NDVI_2021',
+//   assetId: 'projects/ee-arearl/LineIslands/flint_final_mask_NDVI_2021',  // <> modify these
+//   region: flint_outline,
+//   scale: 1.2,
+// });

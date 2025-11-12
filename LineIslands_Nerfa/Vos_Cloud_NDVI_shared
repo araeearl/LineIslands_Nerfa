@@ -1,0 +1,160 @@
+/**** Start of imports. If edited, may not auto-convert in the playground. ****/
+var Vos_2010 = ee.Image("projects/ee-arearl/assets/Lineislands/Vos_Sep102010"),
+    Vos_2022 = ee.Image("projects/ee-arearl/assets/Lineislands/vos_mar172022"),
+    Vos_outline = ee.FeatureCollection("projects/ee-arearl/assets/Lineislands/Vos_outline"),
+    viz_islands = {"opacity":1,"bands":["b3","b2","b1"],"min":0,"max":2000,"gamma":1.5530000000000002},
+    NDVI_Viz = {"opacity":1,"bands":["NDVI"],"min":-1,"max":1,"palette":["ffffff","ce7e45","df923d","f1b555","fcd163","99b718","74a901","054e0b"]};
+/***** End of imports. If edited, may not auto-convert in the playground. *****/
+//Vostok NDVI shared 
+
+// Vos 2022 is an 8 band image from Digital Globe maxar
+// B1 = costal
+// B2= Blue
+// B3 = Green
+// B4 = Yellow
+// B5 = Red
+// B6 = Red edge 
+// B7 = NIR1
+// B8 = NIR2
+
+
+
+//Create collection of images to view them all at once
+
+
+//uploaded from imagery dropbox
+var islandscol = ee.ImageCollection([Vos_2010, Vos_2022] )
+print(islandscol)
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+//add all images in layer function
+
+function addImage(image) { // display each image in collection
+  var id = image.id
+  var image = ee.Image(image.id)
+  Map.addLayer(image, viz_islands, id)
+};
+
+
+
+islandscol.evaluate(function(islandscol){
+  islandscol.features.map(addImage)
+});
+
+
+//////////////////////////////////////
+//clip to only the outline so that the classification is even more accurate
+var Vos_2010 = Vos_2010.clip(Vos_outline)
+var Vos_2022 = Vos_2022.clip(Vos_outline)
+
+//////////////////////////////////////////////////////////
+//2010
+// Compute the Normalized Difference Vegetation Index (NDVI).
+var nir_Vos_2010 = Vos_2010.select('b4');
+var red_Vos_2010 = Vos_2010.select('b3');
+var ndvi_Vos_2010 = nir_Vos_2010.subtract(red_Vos_2010).divide(nir_Vos_2010.add(red_Vos_2010)).rename('NDVI');
+
+//Add bands
+
+var NDVI_Vos_2010 = Vos_2010. addBands(ndvi_Vos_2010)
+
+print(NDVI_Vos_2010, "NDVI_Vos_2010")
+
+
+var ndviVis = {
+  min: -1.0,
+  max: 1.0,
+  palette: [
+    'FFFFFF', 'CE7E45', 'DF923D', 'F1B555', 'FCD163', '99B718', '74A901',
+    '66A000', '529400', '3E8601', '207401', '056201', '004C00', '023B01',
+    '012E01', '011D01', '011301'
+  ],
+};
+
+Map.addLayer(NDVI_Vos_2010.select('NDVI').clip(Vos_outline), NDVI_Viz, "NDVI_Vos_2010")
+
+
+/////////////////////////////////////////////////////
+//2022
+// Compute the Normalized Difference Vegetation Index (NDVI).
+var nir_Vos_2022 = Vos_2022.select('b7');
+var red_Vos_2022 = Vos_2022.select('b5');
+var ndvi_Vos_2022 = nir_Vos_2022.subtract(red_Vos_2022).divide(nir_Vos_2022.add(red_Vos_2022)).rename('NDVI');
+
+//Add bands
+
+var NDVI_Vos_2022 = Vos_2022. addBands(ndvi_Vos_2022)
+
+print(NDVI_Vos_2022, "NDVI_Vos_2022")
+
+
+var ndviVis = {
+  min: -1.0,
+  max: 1.0,
+  palette: [
+    'FFFFFF', 'CE7E45', 'DF923D', 'F1B555', 'FCD163', '99B718', '74A901',
+    '66A000', '529400', '3E8601', '207401', '056201', '004C00', '023B01',
+    '012E01', '011D01', '011301'
+  ],
+};
+
+Map.addLayer(NDVI_Vos_2022.select('NDVI').clip(Vos_outline), NDVI_Viz, "NDVI_Vos_2022")
+
+////////////////////////////////////////////////////////////////////////////
+//cast to float
+
+var  final_NDVI_Vos_2010= NDVI_Vos_2010.toFloat()
+print(final_NDVI_Vos_2010)
+
+var  final_NDVI_Vos_2022= NDVI_Vos_2022.toFloat()
+print(final_NDVI_Vos_2022)
+
+// ////////////////////////////////////////////////////////////////////////////
+
+// // To Drive
+// //Export all the finals to Drive and as an assest
+// Export.image.toDrive({
+//   image: final_NDVI_Vos_2022.clip(Vos_outline),
+//   description: 'Vos_final_mask_NDVI_2022',
+//   folder:"Line_islands",
+//   //crs: 'EPSG :3857',
+//   scale: 2, 
+//   region: Vos_outline,
+//   //maxPixels: 1e9,
+//   fileFormat: 'GeoTIFF'
+// })
+
+
+// //Export all the finals to Drive and as an assest
+// Export.image.toDrive({
+//   image: final_NDVI_Vos_2010.clip(Vos_outline),
+//   description: 'Vos_final_mask_NDVI_2010',
+//   folder:"Line_islands",
+//   //crs: 'EPSG :3857',
+//   scale: 2, 
+//   region: Vos_outline,
+//   //maxPixels: 1e9,
+//   fileFormat: 'GeoTIFF'
+// })
+
+// /////////////////////////////////////////////////////////////////////
+// // // Set the export "scale" and "crs" parameters.
+// Export.image.toAsset({
+//   image: final_NDVI_Vos_2010,
+//   description: 'Vos_final_NDVI_2010',
+//   assetId: 'Vos_final_NDVI_2010',  // <> modify these
+//   region: Vos_outline,
+//   scale: 2,
+// });
+
+// Export.image.toAsset({
+//   image: final_NDVI_Vos_2022,
+//   description: 'Vos_final_NDVI_2022',
+//   assetId: 'Vos_final_NDVI_2022',  // <> modify these
+//   region: Vos_outline,
+//   scale: 2,
+// });
+
+
+
